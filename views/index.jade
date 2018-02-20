@@ -1,7 +1,14 @@
 doctype html
 html
     head
+        title Mapbox Vector Tiles Example
+        link(href="styles.css", rel="stylesheet")
+        link(rel="stylesheet", href="https://openlayers.org/en/v4.6.4/css/ol.css")
+        script(src="https://openlayers.org/en/v4.6.4/build/ol.js")
+        script(src="map.js")
 
     body
-        h1 Hallo OpenLayers
+        #map
 
+        script(type="text/javascript").
+            var map = new Map();
