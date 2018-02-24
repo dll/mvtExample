@@ -4,7 +4,7 @@
   "description": "little example how to use vector tiles with openlayers, postrges and postgis",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
