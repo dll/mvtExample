@@ -1,21 +1,22 @@
-var jade = require("jade");
+var jade = require("pug");
 var express = require("express");
 var Db = require("./db");
 
 var app = express();
-app.set("view engine", "jade")
-app.use(express.static("css"))
-app.use(express.static("js"))
+app.set("view engine", "pug");
+app.use(express.static("css"));
+app.use(express.static("js"));
 
-jade.renderFile("views/index.jade")
-
-app.get("/", (req, res)=>{
-				var db = new Db();
-				db.getVectorTiles().then(response=>{
-								res.render('index', {
-												data: response
-								});
-				});
+jade.renderFile("views/index.pug");
+app.get("/", (req, res) => {
+    res.render('index');
 });
 
-app.listen("8181", ()=>{});
+app.get("/wkt", (req, res) => {
+    var db = new Db();
+    db.getGeomsAsWkt().then( response => {
+        res.send(response);
+    });
+});
+
+app.listen("8181", () => {});
