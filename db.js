@@ -8,7 +8,7 @@ function Db(){
 Db.prototype.getVectorTiles = function(){
     var me = this;
     return new Promise((resolve, reject)=>{
-        me.client.query("select geom from geoms limit 200;", (error, results)=>{
+        me.client.query("select geom from geoms limit 5000;", (error, results)=>{
             resolve(results.rows);
         });
     });
