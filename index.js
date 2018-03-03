@@ -1,8 +1,13 @@
-var jade = require("pug");
-var express = require("express");
-//var Db = require("./db");
+let jade = require("pug");
+let express = require("express");
+let Db = require("./db");
+let mapUtils = require("./js/mapUtils");
+let Cache = require("./cache");
 
-var app = express();
+const app = express();
+const db = new Db();
+const cache = new Cache();
+
 app.set("view engine", "pug");
 app.use(express.static("css"));
 app.use(express.static("js"));
@@ -13,16 +18,16 @@ app.get("/", (req, res) => {
 });
 
 app.get("/tiles/*", (req, res) =>{
-    console.log(req.url);
-    console.log("------------------");
-    res.send();
+    let sMvt = cache.lookUp(req.url);
+    if (!sMvt){
+        let bbox = mapUtils.calculateBboxFromUrl(req.url);
+        db.mvt(bbox).then((oResponse)=>{
+            cache.set(req.url, oResponse[0]);
+            res.send(oResponse[0]);
+        });
+    } else {
+        res.send(sMvt);
+    }
 });
-
-//app.get("/wkt", (req, res) => {
-    //var db = new Db();
-    //db.getGeomsAsWkt().then( response => {
-        //res.send(response);
-    //});
-//});
 
 app.listen("8181", () => {});

@@ -5,24 +5,45 @@ function Db(){
     this.client.connect();
 }
 
-Db.prototype.getVectorTiles = function(){
-    var me = this;
+Db.prototype.getGeomsAsWkt = function(){
+    let me = this;
     return new Promise((resolve, reject)=>{
-        me.client.query("select geom from geoms limit 500;", (error, results)=>{
-            resolve(results.rows);
+        me.client.query("select st_asText(geom) as geom from geoms limit 200;", (error, results)=>{
+            resolve(results.rows.map( row => {
+                return row.geom;
+            }));
         });
     });
 };
 
-Db.prototype.getGeomsAsWkt = function(){
-    var me = this;
-    return new Promise((resolve, reject)=>{
-        me.client.query("select st_asText(geom) as geom from geoms limit 200;", (error, results)=>{
-            var text = "MULTIPOLYGON(((4068 301,4096 155,3924 154,3325 130,2769 101,2061 69,1408 35,775 0,729 0,679 19,641 47,604 149,353 811,159 1300,9 1710,0 1755,68 1803,536 2143,868 2380,1515 2830,1891 3084,2897 3826,3117 3966,3281 4060,3369 4096,3407 3943,3704 2201,4068 301)))";
-			resolve([text]);
-            //resolve(results.rows.map( row => {
-                //return row.geom;
-            //}));
+Db.prototype.mvt = function(aBbox){
+    let me = this;
+    const sBottomLeft = aBbox[0] + ", " + aBbox[1];
+    const sTopRight = aBbox[2] + ", " + aBbox[3];
+    const sSrid = "4326";
+
+    const sQuery = " with geoms as ( " +
+        " select geom  " +
+        " from geoms g " +
+        " ), bottomLeft as ( " +
+        " select st_setsrid(st_point( " + sBottomLeft + "), " + sSrid + ") as geom " +
+        " ), topRight as ( " +
+        " select st_setsrid(st_point( " + sTopRight + "), " + sSrid + ") as geom " +
+        " ), bbox as ( " +
+        " select st_makebox2d((select geom from bottomLeft), (select geom from topRight)) as bbox " +
+        " ) " +
+        "  " +
+        " select st_asmvt(x) as mvt " +
+        " from ( " +
+        " select st_asmvtgeom(geom, (select bbox from bbox), 4096, 0, false) as mvtGeom " +
+        " from geoms " +
+        " )x; ";
+
+    return new Promise((resolve, reject) => {
+        me.client.query(sQuery, (error, results) => {
+            resolve(results.rows.map( row => {
+                return row.mvt;
+            }));
         });
     });
 };

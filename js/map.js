@@ -1,15 +1,11 @@
 function Map(){
     this.Formats = {
-        wkt: () => { return "wkt"; },
-        vectorTile: () => { return "vectorTile"; }
+        wkt: () => { return "wkt"; }
     };
-    let oMouseControl = new ol.control.MousePosition({
-        coordinateFormat: ol.coordinate.createStringXY(4),
-        projection: 'EPSG:3857'
-    });
 
     this.map = new ol.Map({
         target: "map",
+        renderer: "canvas",
         layers: [
             new ol.layer.Tile({
                 source: new ol.source.OSM()
@@ -17,21 +13,16 @@ function Map(){
             new ol.layer.VectorTile({
                 source: new ol.source.VectorTile({
                     format: new ol.format.MVT(),
-                    url: "http://localhost:8181/tiles/{z}/{x}/{y}",
-                    projection: "EPSG:3857"
+                    url: "http://localhost:8181/tiles/{z}/{x}/{y}"
                 })
             })
         ],
         view: new ol.View({
-            //center:  [12, 49],
-            center: [1335833.89, 6800125.45],
-            zoom: 8,
-            //projection: "EPSG:4326"
+            center: [0, 0],
+            zoom: 2,
             projection: "EPSG:3857"
         })
     });
-
-    this.map.addControl(oMouseControl);
 }
 
 Map.prototype.requestWktGeometries = function(){
@@ -56,8 +47,8 @@ Map.prototype.drawWktGeometries = function(aGeometries){
         return;
     }
 
-    var oReader = new ol.format.WKT();
-    var oVectorSource = new ol.source.Vector();
+    let oReader = new ol.format.WKT();
+    let oVectorSource = new ol.source.Vector();
     aGeometries.forEach( oGeometry => {
         let oFeature = oReader.readFeature(oGeometry);
         if (!oFeature) { return; }
@@ -65,7 +56,7 @@ Map.prototype.drawWktGeometries = function(aGeometries){
         oVectorSource.addFeature(oFeature);
     });
 
-    var oVectorLayer = new ol.layer.Vector();
+    let oVectorLayer = new ol.layer.Vector();
     oVectorLayer.setSource(oVectorSource);
 
     this.map.addLayer(oVectorLayer);
