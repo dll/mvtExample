@@ -3,15 +3,35 @@ function Map(){
         wkt: () => { return "wkt"; },
         vectorTile: () => { return "vectorTile"; }
     };
+    let oMouseControl = new ol.control.MousePosition({
+        coordinateFormat: ol.coordinate.createStringXY(4),
+        projection: 'EPSG:3857'
+    });
+
     this.map = new ol.Map({
         target: "map",
-        layers: [ new ol.layer.Tile({ source: new ol.source.OSM() })],
+        layers: [
+            new ol.layer.Tile({
+                source: new ol.source.OSM()
+            }),
+            new ol.layer.VectorTile({
+                source: new ol.source.VectorTile({
+                    format: new ol.format.MVT(),
+                    url: "http://localhost:8181/tiles/{z}/{x}/{y}",
+                    projection: "EPSG:3857"
+                })
+            })
+        ],
         view: new ol.View({
-            center:  [12, 52],
-            zoom: 9,
-            projection: "EPSG:4326"
+            //center:  [12, 49],
+            center: [1335833.89, 6800125.45],
+            zoom: 8,
+            //projection: "EPSG:4326"
+            projection: "EPSG:3857"
         })
     });
+
+    this.map.addControl(oMouseControl);
 }
 
 Map.prototype.requestWktGeometries = function(){

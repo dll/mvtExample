@@ -10,8 +10,12 @@ with geom as (
 	select st_makebox2d((select geom from bottomleft), (select geom from topright)) as bbox
 )
 
-select st_asmvt(x)
-from (
-	select st_asmvtgeom((select geom from geom), bbox, 4096, 0, false)
+--select st_asmvt(x)
+--from (
+--	select st_asmvtgeom((select geom from geom), bbox, 4096, 0, false)
+--	from boundingbox
+--)x;
+
+
+	select st_astext(st_asmvtgeom((select geom from geom), bbox, 4096, 0, false))
 	from boundingbox
-)x;

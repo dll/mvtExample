@@ -1,6 +1,6 @@
 var jade = require("pug");
 var express = require("express");
-var Db = require("./db");
+//var Db = require("./db");
 
 var app = express();
 app.set("view engine", "pug");
@@ -12,11 +12,17 @@ app.get("/", (req, res) => {
     res.render('index');
 });
 
-app.get("/wkt", (req, res) => {
-    var db = new Db();
-    db.getGeomsAsWkt().then( response => {
-        res.send(response);
-    });
+app.get("/tiles/*", (req, res) =>{
+    console.log(req.url);
+    console.log("------------------");
+    res.send();
 });
+
+//app.get("/wkt", (req, res) => {
+    //var db = new Db();
+    //db.getGeomsAsWkt().then( response => {
+        //res.send(response);
+    //});
+//});
 
 app.listen("8181", () => {});
