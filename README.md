@@ -2,7 +2,7 @@
 Tiny project to learn something about the usage of Mapbox Vector Tiles with openlayers 3
 
 # Preparation
-* install at least Postgres 9.6  with postgis extension
+* install at least Postgres 9.6  with postgis >= 2.4.0 extension
 * create a database with a table "geoms" 
 * geoms table has a column geom which is the geometry column
 * add random geometries with srid 4326
